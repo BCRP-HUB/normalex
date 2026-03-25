@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BCRP | SAFR NormaLex</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f7f8fa;--surface:#fff;--border:#e5e7eb;--border-light:#f3f4f6;--text:#111827;--text-sec:#6b7280;--text-mut:#9ca3af;--teal:#0d9488;--teal-lt:#f0fdfa;--teal-mid:#5eead4;--sb-bg:#0f1218;--amber-bg:#fef3c7;--amber-fg:#92400e;--amber-dot:#f59e0b;--blue-bg:#dbeafe;--blue-fg:#1e40af;--blue-dot:#3b82f6;--violet-bg:#ede9fe;--violet-fg:#5b21b6;--violet-dot:#8b5cf6;--gray-bg:#f3f4f6;--gray-fg:#374151;--gray-dot:#9ca3af}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text)}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:3px}
+
+.app{display:flex;height:100vh}
+.sidebar{width:230px;background:var(--sb-bg);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+
+.sb-brand{padding:20px 16px;border-bottom:1px solid #1e2433;display:flex;align-items:center;gap:11px}
+.sb-logo{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#0d9488,#065f46);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:13px;flex-shrink:0}
+.sb-text h2{font-size:15px;font-weight:700;color:#f9fafb;letter-spacing:-.4px;line-height:1.1}
+.sb-text span{font-size:9px;color:#4b5563;font-weight:600;text-transform:uppercase;letter-spacing:.7px}
+.sb-nav{flex:1;padding:10px 0}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 16px;margin:2px 10px;border-radius:8px;cursor:pointer;color:#9ca3af;font-size:13px;transition:all .15s;text-decoration:none}
+.nav-item:hover{background:rgba(255,255,255,.05);color:#d1d5db}
+.nav-item.active{background:rgba(13,148,136,.15);color:var(--teal-mid);font-weight:600}
+.nav-item svg{flex-shrink:0;width:18px;height:18px}
+.sb-footer{padding:14px 16px;border-top:1px solid #1e2433;font-size:10px;color:#4b5563;line-height:1.5}
+
+.header{padding:12px 24px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:14px;flex-shrink:0}
+.header h1{font-size:17px;font-weight:700;letter-spacing:-.4px;white-space:nowrap}
+.search-box{flex:1;max-width:480px;position:relative}
+.search-box input{width:100%;padding:8px 12px 8px 36px;border:1px solid var(--border);border-radius:8px;font-size:13px;background:#f9fafb;outline:none;font-family:inherit;color:var(--text)}
+.search-box input:focus{border-color:var(--teal);background:#fff}
+.search-box svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text-mut);width:16px;height:16px}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--text-sec);font-family:inherit;transition:all .15s}
+.btn:hover{border-color:#d1d5db;background:#f9fafb}
+.btn.active{border-color:var(--teal);background:var(--teal-lt);color:var(--teal)}
+.btn-clear{background:none;border:none;color:#ef4444;font-size:11px;cursor:pointer;font-weight:500;font-family:inherit;padding:4px 8px}
+.fbadge{background:var(--teal);color:#fff;border-radius:99px;font-size:10px;padding:0 5px;font-weight:700}
+
+.fbar{padding:10px 24px;background:#f9fafb;border-bottom:1px solid var(--border);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.fbar select{padding:6px 10px;border-radius:6px;border:1px solid var(--border);font-size:12px;background:#fff;color:var(--text);font-family:inherit;outline:none;cursor:pointer}
+.fbar select:focus{border-color:var(--teal)}
+.fcount{font-size:11px;color:var(--text-sec);margin-left:8px}
+
+.content{flex:1;overflow-y:auto}
+.padded{padding:24px}
+
+.stats-grid{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:24px}
+.stat{background:var(--surface);border-radius:12px;padding:20px 22px;border:1px solid var(--border);flex:1 1 180px;min-width:170px;cursor:pointer;transition:box-shadow .2s}
+.stat:hover{box-shadow:0 2px 12px rgba(0,0,0,.06)}
+.stat .v{font-size:28px;font-weight:700;letter-spacing:-1px;line-height:1}
+.stat .l{font-size:12px;color:var(--text-sec);margin-top:5px;font-weight:500}
+.stat .ib{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center}
+
+.chart{background:var(--surface);border-radius:12px;border:1px solid var(--border);padding:20px}
+.chart h3{font-size:13px;font-weight:700;color:#374151;margin-bottom:14px}
+.bar-r{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.bar-l{width:220px;flex-shrink:0;font-size:12px;color:#4b5563;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar-t{flex:1;height:6px;background:var(--border-light);border-radius:3px;overflow:hidden;min-width:40px}
+.bar-f{height:100%;border-radius:3px;transition:width .6s}
+.bar-v{font-size:11px;color:var(--text-mut);font-weight:600;min-width:30px;text-align:right;flex-shrink:0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+
+.lhdr{padding:10px 20px;border-bottom:1px solid var(--border);font-size:12px;color:var(--text-sec);font-weight:500;background:var(--surface);position:sticky;top:0;z-index:2}
+.row{display:flex;gap:12px;padding:14px 20px;border-bottom:1px solid var(--border-light);cursor:pointer;transition:background .12s;align-items:flex-start}
+.row:hover{background:#f8fafc}
+.row .dot{width:4px;border-radius:2px;flex-shrink:0;align-self:stretch;min-height:20px;margin-top:2px}
+.row .body{flex:1;min-width:0}
+.row .ttl{font-size:13px;font-weight:600;line-height:1.4;margin-bottom:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.row .meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:11px;color:var(--text-sec)}
+.row .meta .sep{color:#d1d5db}
+.row .bdgs{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0}
+
+.badge{display:inline-block;padding:2px 9px;border-radius:99px;font-size:10px;font-weight:600;white-space:nowrap;letter-spacing:.2px}
+.b-leg{background:var(--amber-bg);color:var(--amber-fg)}
+.b-nor{background:var(--blue-bg);color:var(--blue-fg)}
+.b-con{background:var(--violet-bg);color:var(--violet-fg)}
+.b-sin{background:var(--gray-bg);color:var(--gray-fg)}
+.b-est{padding:2px 9px;border-radius:99px;font-size:10px;font-weight:600}
+.e-pre{background:#fed7aa;color:#7c2d12}.e-com{background:#fef3c7;color:#92400e}.e-dic{background:#d1fae5;color:#065f46}
+.e-vot{background:#ede9fe;color:#5b21b6}.e-vig{background:#d1fae5;color:#065f46}.e-pub{background:#dbeafe;color:#1e40af}
+
+.overlay{position:fixed;inset:0;z-index:100;display:flex;justify-content:flex-end}
+.ov-bg{position:absolute;inset:0;background:rgba(0,0,0,.35);backdrop-filter:blur(2px)}
+.dpanel{position:relative;width:min(620px,92vw);background:var(--surface);box-shadow:-4px 0 30px rgba(0,0,0,.12);overflow-y:auto;display:flex;flex-direction:column;animation:slideIn .25s ease}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+.dsticky{position:sticky;top:0;z-index:1;background:var(--surface);border-bottom:1px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.dhead{padding:20px 24px;display:flex;justify-content:space-between;align-items:flex-start}
+.dhead h2{font-size:16px;font-weight:700;line-height:1.4;margin-top:8px}
+.dclose{background:none;border:none;cursor:pointer;color:var(--text-mut);padding:4px}
+.dclose:hover{color:var(--text)}
+.dgrid{padding:16px 24px;display:grid;grid-template-columns:1fr 1fr;gap:14px;border-bottom:1px solid var(--border-light)}
+.dgrid label{font-size:10px;color:var(--text-mut);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.dgrid p{font-size:13px;color:var(--text);margin-top:2px}
+.dlink{padding:12px 24px;border-bottom:1px solid var(--border-light)}
+.dlink a{font-size:12px;color:var(--teal);display:inline-flex;align-items:center;gap:5px;text-decoration:none;font-weight:500}
+.dlink a:hover{text-decoration:underline}
+.dresumen{padding:16px 24px;border-bottom:1px solid var(--border-light)}
+.dresumen h4,.dprog h4,.dtl h4{font-size:11px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
+.dresumen p{font-size:13px;color:#4b5563;line-height:1.7;text-align:justify;white-space:pre-line}
+
+.dprog{padding:10px 24px 14px;background:var(--surface);border-top:1px solid var(--border-light)}
+.pbar{display:flex;align-items:center}
+.pstep{display:flex;align-items:center;flex:1}
+.pdot{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
+.pdot.on{background:var(--teal);color:#fff}.pdot.off{background:#e5e7eb;color:var(--text-mut)}
+.pline{flex:1;height:2px}.pline.on{background:var(--teal)}.pline.off{background:#e5e7eb}
+.plabels{display:flex;margin-top:5px}.plabels span{flex:1;text-align:center;font-size:9px;font-weight:500}
+.plabels .on{color:var(--teal)}.plabels .off{color:var(--text-mut)}
+
+.dtl{padding:16px 24px}
+.ttrack{position:relative;padding-left:22px}
+.ttrack::before{content:'';position:absolute;left:5px;top:8px;bottom:8px;width:2px;background:#e5e7eb}
+.titem{position:relative;margin-bottom:18px}
+.tdot{position:absolute;left:-18px;top:5px;width:10px;height:10px;border-radius:50%;border:2px solid #fff}
+.titem .et{font-size:11px;font-weight:600;margin-bottom:2px}
+.titem .ett{font-size:12px;color:#374151;line-height:1.4}
+.titem .em{font-size:10px;color:var(--text-mut);margin-top:2px}
+
+.dgroup{margin-bottom:20px}
+.dlabel{font-size:12px;font-weight:700;color:var(--teal);padding:4px 0;border-bottom:2px solid var(--border);display:inline-block;margin-bottom:10px}
+.counters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.chip{padding:6px 14px;border-radius:8px;background:var(--surface);border:1px solid var(--border);font-size:12px}
+.chip .n{font-weight:600;color:#374151}.chip .c{margin-left:6px;font-weight:700;color:var(--teal)}
+.catlink,.flink{transition:opacity .15s}.catlink:hover,.flink:hover{opacity:.7;text-decoration:underline;text-underline-offset:2px}
+.barcat,.barfuente{transition:background .15s;border-radius:4px;cursor:pointer}.barcat:hover{background:#f0fdfa}.barfuente:hover{background:#eff6ff}
+.empty{padding:60px 20px;text-align:center;color:var(--text-mut);font-size:13px}
+.more{padding:20px;text-align:center;color:var(--text-mut);font-size:12px}
+
+@media(max-width:900px){
+.sidebar{width:56px}.sb-text,.nav-item span,.sb-footer{display:none}.sb-brand{padding:20px 11px;justify-content:center}.nav-item{justify-content:center;padding:10px;margin:2px 6px}
+.grid2{grid-template-columns:1fr}.stats-grid{flex-direction:column}.header{padding:12px 14px;gap:8px}.header h1{font-size:14px}.padded{padding:16px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="sb-brand"><div class="sb-logo">NL</div><div class="sb-text"><h2>NormaLex</h2><span>Inteligencia Regulatoria</span></div></div>
+    <nav class="sb-nav" id="nav"></nav>
+    <div class="sb-footer" id="foot"></div>
+  </aside>
+  <div class="main">
+    <div class="header" id="hdr"></div>
+    <div id="filt"></div>
+    <div class="content" id="cnt"></div>
+  </div>
+</div>
+<div class="overlay" id="ov" style="display:none"><div class="ov-bg" id="ovbg"></div><div class="dpanel" id="dp"></div></div>
+
+<script>
+let D={instrumentos:[],eventos:[],stats:{}};
+let S={view:'dashboard',search:'',fTipo:'',fFuente:'',fCat:'',fCiclo:'',fGP:'',showF:false};
+
+const NAV=[
+  {id:'dashboard',label:'Dashboard',icon:'home'},
+  {id:'buscador',label:'Buscador General',icon:'search'},
+  {id:'tracker',label:'Issue Tracker',icon:'law'},
+  {id:'normativo',label:'Monitor Normativo',icon:'doc'},
+  {id:'consulta',label:'Consultas Regulatorias',icon:'flask'},
+  {id:'timeline',label:'Actividad Reciente',icon:'clock'},
+];
+const VT={dashboard:'Dashboard',buscador:'Buscador General',tracker:'Issue Tracker Legislativo',normativo:'Monitor Normativo',consulta:'Consultas Regulatorias',timeline:'Actividad Reciente'};
+const EF=['Presentado','En Comisión','Con Dictamen','En Agenda','Segunda Votación','Aprobado'];
+const CM={'LEGISLATIVO':{b:'b-leg',d:'var(--amber-dot)',a:'#d97706'},'NORMATIVO':{b:'b-nor',d:'var(--blue-dot)',a:'#2563eb'},'CONSULTA REGULATORIA':{b:'b-con',d:'var(--violet-dot)',a:'#7c3aed'},'SIN CICLO':{b:'b-sin',d:'var(--gray-dot)',a:'#6b7280'}};
+const EC={'Presentado':'e-pre','En Comisión':'e-com','Con Dictamen':'e-dic','Segunda Votación':'e-vot','Vigente':'e-vig','Publicado':'e-pub'};
+
+const P={
+home:'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6',
+search:'M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z',
+law:'M3 6l3 1m0 0l-3 9a5 5 0 006 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5 5 0 006 0l-3-9m0 0l-3-1m3 1V4',
+doc:'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
+flask:'M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z',
+clock:'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
+filter:'M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z',
+x:'M6 18L18 6M6 6l12 12',
+ext:'M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14',
+chart:'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z',
+list:'M4 6h16M4 10h16M4 14h16M4 18h16',
+};
+const ic=(n,s=18)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="${P[n]||P.doc}"/></svg>`;
+const h=s=>s?String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'):'';
+const uniq=a=>[...new Set(a)].filter(Boolean).sort();
+const cb=c=>{const m=CM[c]||CM['SIN CICLO'];return`<span class="badge ${m.b}">${h(c)}</span>`;};
+const eb=e=>{if(!e)return'';return`<span class="badge b-est ${EC[e]||''}">${h(e)}</span>`;};
+
+function gf(){
+  let it=D.instrumentos;
+  const v=S.view;
+  if(v==='tracker')it=it.filter(i=>i.ciclo==='LEGISLATIVO');
+  else if(v==='normativo')it=it.filter(i=>i.ciclo==='NORMATIVO');
+  else if(v==='consulta')it=it.filter(i=>i.ciclo==='CONSULTA REGULATORIA');
+  if(S.search){const q=S.search.toLowerCase();it=it.filter(i=>(i.titulo||'').toLowerCase().includes(q)||(i.ref||'').toLowerCase().includes(q)||(i.cat||'').toLowerCase().includes(q)||(i.fuente||'').toLowerCase().includes(q));}
+  if(S.fTipo)it=it.filter(i=>i.tipo===S.fTipo);
+  if(S.fFuente)it=it.filter(i=>i.fuente===S.fFuente);
+  if(S.fCat)it=it.filter(i=>i.cat===S.fCat);
+  if(S.fCiclo)it=it.filter(i=>i.ciclo===S.fCiclo);
+  if(S.fGP)it=it.filter(i=>i.gp===S.fGP);
+  return it;
+}
+const hf=()=>S.search||S.fTipo||S.fFuente||S.fCat||S.fCiclo||S.fGP;
+const cf=()=>{S.search='';S.fTipo='';S.fFuente='';S.fCat='';S.fCiclo='';S.fGP='';};
+
+function rw(i){
+  const m=CM[i.ciclo]||CM['SIN CICLO'];
+  return`<div class="row" data-id="${h(i.id)}"><div class="dot" style="background:${m.d}"></div><div class="body"><div class="ttl">${h(i.titulo)}</div><div class="meta"><span class="flink" data-f="${h(i.fuente)}" style="cursor:pointer">${h(i.fuente)}</span><span class="sep">·</span><span>${h(i.fecha)}</span>${i.cat?`<span class="sep">·</span><span class="catlink" data-cat="${h(i.cat)}" style="color:${m.a};font-weight:500;cursor:pointer">${h(i.cat)}</span>`:''}</div></div><div class="bdgs">${cb(i.ciclo)}${eb(i.estado)}</div></div>`;
+}
+function goToCat(cat){S.view='buscador';cf();S.fCat=cat;S.showF=true;render();}
+function goToFuente(f){S.view='buscador';cf();S.fFuente=f;S.showF=true;render();}
+function br(el){
+  el.querySelectorAll('.row').forEach(r=>r.addEventListener('click',()=>od(r.dataset.id)));
+  el.querySelectorAll('.catlink').forEach(c=>c.addEventListener('click',e=>{e.stopPropagation();goToCat(c.dataset.cat);}));
+  el.querySelectorAll('.flink').forEach(c=>c.addEventListener('click',e=>{e.stopPropagation();goToFuente(c.dataset.f);}));
+}
+
+function rsb(){
+  const n=document.getElementById('nav');
+  n.innerHTML=NAV.map(x=>`<a class="nav-item ${S.view===x.id?'active':''}" data-v="${x.id}">${ic(x.icon)}<span>${x.label}</span></a>`).join('');
+  n.querySelectorAll('.nav-item').forEach(el=>el.addEventListener('click',()=>{S.view=el.dataset.v;cf();S.showF=false;render();}));
+  document.getElementById('foot').innerHTML=`${D.instrumentos.length.toLocaleString()} instrumentos · ${D.eventos.length} eventos<br>Datos: 23/03/2026`;
+}
+
+function rhdr(){
+  const el=document.getElementById('hdr'),v=S.view,ss=v!=='dashboard',sf=v!=='dashboard'&&v!=='timeline',hff=hf();
+  let x=`<h1>${VT[v]}</h1>`;
+  if(ss)x+=`<div class="search-box">${ic('search',16)}<input type="text" id="si" placeholder="Buscar por título, norma, fuente o categoría..." value="${h(S.search)}"></div>`;
+  if(sf)x+=`<button class="btn ${S.showF||hff?'active':''}" id="tf">${ic('filter',14)} Filtros${hff?' <span class="fbadge">!</span>':''}</button>`;
+  if(hff)x+=`<button class="btn-clear" id="clr">Limpiar</button>`;
+  el.innerHTML=x;
+  document.getElementById('si')?.addEventListener('input',e=>{S.search=e.target.value;rc();rflt();});
+  document.getElementById('tf')?.addEventListener('click',()=>{S.showF=!S.showF;rflt();});
+  document.getElementById('clr')?.addEventListener('click',()=>{cf();render();});
+}
+
+function rflt(){
+  const el=document.getElementById('filt'),v=S.view;
+  if(!S.showF||v==='dashboard'||v==='timeline'){el.innerHTML='';return;}
+  const tipos=uniq(D.instrumentos.map(i=>i.tipo)),fuentes=uniq(D.instrumentos.map(i=>i.fuente)),cats=uniq(D.instrumentos.filter(i=>i.cat).map(i=>i.cat)),gps=uniq(D.instrumentos.filter(i=>i.gp).map(i=>i.gp));
+  const f=gf(),opt=(a,val)=>a.map(x=>`<option value="${h(x)}"${x===val?' selected':''}>${h(x)}</option>`).join('');
+  let x='<div class="fbar">';
+  if(v==='buscador')x+=`<select id="fc"><option value="">Ciclo de vida</option>${opt(['LEGISLATIVO','NORMATIVO','CONSULTA REGULATORIA','SIN CICLO'],S.fCiclo)}</select>`;
+  x+=`<select id="ft"><option value="">Tipo</option>${opt(tipos,S.fTipo)}</select>`;
+  x+=`<select id="ff"><option value="">Fuente</option>${opt(fuentes,S.fFuente)}</select>`;
+  x+=`<select id="fca"><option value="">Categoría</option>${opt(cats,S.fCat)}</select>`;
+  if(v==='tracker'||v==='buscador')x+=`<select id="fg"><option value="">Grupo Parlamentario</option>${opt(gps,S.fGP)}</select>`;
+  x+=`<span class="fcount">${f.length} resultados</span></div>`;
+  el.innerHTML=x;
+  [['fc','fCiclo'],['ft','fTipo'],['ff','fFuente'],['fca','fCat'],['fg','fGP']].forEach(([id,key])=>{
+    const s=document.getElementById(id);if(!s)return;
+    s.addEventListener('change',()=>{S[key]=s.value;rc();rflt();});
+  });
+}
+
+function rdash(){
+  const s=D.stats,cats=Object.entries(s.por_categoria||{}).slice(0,10),fts=Object.entries(s.por_fuente||{}).slice(0,10);
+  const mc=cats.length?cats[0][1]:1,mf=fts.length?fts[0][1]:1;
+  const rec=[...D.instrumentos].sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||'')).slice(0,10);
+  const el=document.getElementById('cnt');
+  el.innerHTML=`<div class="padded">
+<div class="stats-grid">
+${[['total','Total Instrumentos','#111827','list'],['LEGISLATIVO','Proyectos de Ley','#d97706','law'],['NORMATIVO','Normas Publicadas','#2563eb','doc'],['CONSULTA REGULATORIA','Consultas Regulatorias','#7c3aed','flask']].map(([k,lb,cl,icn])=>{
+  const val=k==='total'?s.total:(s.por_ciclo?.[k]||0);
+  const goto=k==='total'?'buscador':k==='LEGISLATIVO'?'tracker':k==='NORMATIVO'?'normativo':'consulta';
+  return`<div class="stat" data-goto="${goto}"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div class="v" style="color:${cl}">${val}</div><div class="l">${lb}</div></div><div class="ib" style="background:${cl}18;color:${cl}">${ic(icn)}</div></div></div>`;
+}).join('')}
+<div class="stat"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div class="v" style="color:#059669">${s.por_estado?.['En Comisión']||0}</div><div class="l">PLs en Comisión</div></div><div class="ib" style="background:#05966918;color:#059669">${ic('clock')}</div></div></div>
+</div>
+<div class="grid2">
+<div class="chart"><h3>Top Categorías Temáticas</h3>${cats.map(([c,n])=>`<div class="bar-r barcat" data-cat="${h(c)}" style="cursor:pointer"><div class="bar-l">${h(c)}</div><div class="bar-t"><div class="bar-f" style="width:${n/mc*100}%;background:linear-gradient(90deg,#0d9488,#5eead4)"></div></div><div class="bar-v">${n}</div></div>`).join('')}</div>
+<div class="chart"><h3>Por Fuente Institucional</h3>${fts.map(([f,n])=>`<div class="bar-r barfuente" data-f="${h(f)}" style="cursor:pointer"><div class="bar-l">${h(f)}</div><div class="bar-t"><div class="bar-f" style="width:${n/mf*100}%;background:linear-gradient(90deg,#2563eb,#93c5fd)"></div></div><div class="bar-v">${n}</div></div>`).join('')}</div>
+</div>
+<div class="chart" style="border-radius:12px 12px 0 0"><div style="display:flex;justify-content:space-between;align-items:center"><h3 style="margin:0">Actividad Reciente</h3><a href="#" id="gtl" style="font-size:11px;color:var(--teal);text-decoration:none;font-weight:600">Ver todo →</a></div></div>
+<div style="background:var(--surface);border:1px solid var(--border);border-top:none;border-radius:0 0 12px 12px;overflow:hidden" id="rl">${rec.map(i=>rw(i)).join('')}</div>
+</div>`;
+  el.querySelectorAll('.stat[data-goto]').forEach(c=>c.addEventListener('click',()=>{S.view=c.dataset.goto;cf();render();}));
+  document.getElementById('gtl')?.addEventListener('click',e=>{e.preventDefault();S.view='timeline';cf();render();});
+  br(el);
+  el.querySelectorAll('.barcat').forEach(b=>b.addEventListener('click',()=>goToCat(b.dataset.cat)));
+  el.querySelectorAll('.barfuente').forEach(b=>b.addEventListener('click',()=>goToFuente(b.dataset.f)));
+}
+
+function rlist(){
+  const f=gf(),v=S.view,lb=v==='normativo'?'normas':v==='consulta'?'consultas':'instrumentos',mx=250;
+  const el=document.getElementById('cnt');
+  el.innerHTML=`<div class="lhdr">${f.length} ${lb}</div><div style="background:var(--surface)">${f.length===0?'<div class="empty">No se encontraron resultados.</div>':f.slice(0,mx).map(i=>rw(i)).join('')}${f.length>mx?`<div class="more">Mostrando ${mx} de ${f.length}. Usa filtros para refinar.</div>`:''}</div>`;
+  br(el);
+}
+
+function rtrk(){
+  const f=gf(),ests=['En Comisión','Presentado','Con Dictamen','Segunda Votación'],se=f.filter(i=>!i.estado).length;
+  const el=document.getElementById('cnt');
+  el.innerHTML=`<div class="padded">
+<div class="counters">${ests.map(e=>{const c=f.filter(i=>i.estado===e).length;return c?`<div class="chip"><span class="n">${e}</span><span class="c">${c}</span></div>`:''}).join('')}<div class="chip"><span class="n">Sin estado</span><span class="c" style="color:var(--text-mut)">${se}</span></div></div>
+<div style="background:var(--surface);border-radius:12px;border:1px solid var(--border);overflow:hidden">
+<div class="lhdr">${f.length} proyectos de ley</div>
+${f.slice(0,250).map(i=>rw(i)).join('')}
+</div></div>`;
+  br(el);
+}
+
+function rtl(){
+  const sorted=[...D.instrumentos].sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||''));
+  const gr={};sorted.forEach(i=>{const d=i.fecha||'Sin fecha';if(!gr[d])gr[d]=[];gr[d].push(i);});
+  const dates=Object.keys(gr).slice(0,25);
+  const el=document.getElementById('cnt');
+  el.innerHTML=`<div class="padded">${dates.map(d=>`<div class="dgroup"><div class="dlabel">${h(d)}</div><div style="background:var(--surface);border-radius:10px;border:1px solid var(--border);overflow:hidden">${gr[d].map(i=>rw(i)).join('')}</div></div>`).join('')}</div>`;
+  br(el);
+}
+
+function od(id){
+  const i=D.instrumentos.find(x=>x.id===id);if(!i)return;
+  const m=CM[i.ciclo]||CM['SIN CICLO'];
+  const evs=[];
+  if(i.ref){const refs=i.ref.split(/[,y]/).map(s=>s.trim().replace(/\/.*$/,''));
+    D.eventos.forEach(ev=>{if(ev.plRef&&refs.some(r=>ev.plRef.includes(r)||r.includes(ev.plRef)))evs.push(ev);});
+    evs.sort((a,b)=>(a.fecha||'').localeCompare(b.fecha||''));
+  }
+  const flds=[['Tipo',i.tipo],['Fuente',i.fuente],['Categoría',i.cat],['Subcategoría',i.subcat],['Identificador',i.ref],['Fecha detección',i.fecha],['Fecha publicación',i.fechaPub],['Fecha vigencia',i.fechaVig],['Grupo Parlamentario',i.gp]].filter(([,v])=>v);
+
+  let prog='';
+  if(i.ciclo==='LEGISLATIVO'){
+    const ci=EF.indexOf(i.estado||'Presentado');
+    prog=`<div class="dprog"><h4>Progreso Legislativo</h4><div class="pbar">${EF.map((e,idx)=>`<div class="pstep"><div class="pdot ${ci>=idx?'on':'off'}">${idx+1}</div>${idx<EF.length-1?`<div class="pline ${ci>idx?'on':'off'}"></div>`:''}</div>`).join('')}</div><div class="plabels">${EF.map((e,idx)=>`<span class="${ci>=idx?'on':'off'}">${e.replace('Segunda Votación','2da Vot.')}</span>`).join('')}</div></div>`;
+  }
+
+  let tl='';
+  if(evs.length){
+    tl=`<div class="dtl"><h4>Timeline de Eventos (${evs.length})</h4><div class="ttrack">${evs.map(ev=>`<div class="titem"><div class="tdot" style="background:${m.d};box-shadow:0 0 0 3px ${m.d}30"></div><div class="et" style="color:${m.a}">${h(ev.tipo)} — ${h(ev.fecha)}</div><div class="ett">${h(ev.titulo)}</div><div class="em">${h(ev.fuente)}</div></div>`).join('')}</div></div>`;
+  }
+
+  document.getElementById('dp').innerHTML=`
+<div class="dsticky">
+<div class="dhead"><div style="flex:1;margin-right:12px"><div style="display:flex;gap:6px;margin-bottom:6px">${cb(i.ciclo)}${eb(i.estado)}</div><h2>${h(i.titulo)}</h2></div><button class="dclose" id="dc">${ic('x',20)}</button></div>
+${prog}
+</div>
+<div class="dgrid">${flds.map(([l,v])=>`<div><label>${l}</label><p>${l==='Categoría'?`<span class="catlink-d" data-cat="${h(v)}" style="color:var(--teal);cursor:pointer;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:2px">${h(v)}</span>`:l==='Fuente'?`<span class="flink-d" data-f="${h(v)}" style="color:var(--teal);cursor:pointer;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:2px">${h(v)}</span>`:h(v)}</p></div>`).join('')}</div>
+${i.link?`<div class="dlink"><a href="${h(i.link)}" target="_blank" rel="noopener noreferrer">${ic('ext',14)} Abrir documento original</a></div>`:''}
+${i.resumen?`<div class="dresumen"><h4>Resumen</h4><p>${h(i.resumen)}</p></div>`:''}
+${tl}`;
+  document.getElementById('ov').style.display='flex';
+  document.getElementById('dc').addEventListener('click',cd);
+  document.getElementById('ovbg').addEventListener('click',cd);
+  document.querySelectorAll('.catlink-d').forEach(c=>c.addEventListener('click',()=>{cd();goToCat(c.dataset.cat);}));
+  document.querySelectorAll('.flink-d').forEach(c=>c.addEventListener('click',()=>{cd();goToFuente(c.dataset.f);}));
+}
+function cd(){document.getElementById('ov').style.display='none';}
+
+function rc(){
+  const v=S.view;
+  if(v==='dashboard')rdash();else if(v==='tracker')rtrk();else if(v==='timeline')rtl();else rlist();
+}
+
+function render(){rsb();rhdr();rflt();rc();}
+
+document.addEventListener('keydown',e=>{if(e.key==='Escape')cd();});
+
+async function load(){
+  try{
+    const[a,b,c]=await Promise.all([fetch('data/instrumentos.json'),fetch('data/eventos.json'),fetch('data/stats.json')]);
+    D.instrumentos=await a.json();D.eventos=await b.json();D.stats=await c.json();
+    render();
+  }catch(e){
+    document.getElementById('cnt').innerHTML=`<div class="empty" style="padding:100px 40px"><h2 style="font-size:18px;color:#374151;margin-bottom:8px">No se pudieron cargar los datos</h2><p style="color:var(--text-sec);font-size:13px;max-width:400px;margin:0 auto;line-height:1.6">Ejecuta: <code style="background:#f3f4f6;padding:2px 8px;border-radius:4px;font-size:12px">python server.py</code> y abre <code style="background:#f3f4f6;padding:2px 8px;border-radius:4px;font-size:12px">http://localhost:8000</code></p></div>`;
+  }
+}
+load();
+</script>
+</body>
+</html>
